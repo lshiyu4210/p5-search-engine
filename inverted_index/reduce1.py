@@ -1,2 +1,2 @@
 #!/usr/bin/env python3
-"""Reduce 0."""
+"""Reduce 1."""
