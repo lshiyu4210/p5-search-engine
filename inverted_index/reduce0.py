@@ -9,6 +9,8 @@ def main():
         if key == "DocCount":
             total_count += int(value)
     print(total_count)
+    # with open("output0", "w") as file:
+    #     file.write(str(total_count) + '\n')
 
 if __name__ == "__main__":
     main()
