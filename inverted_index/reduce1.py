@@ -25,7 +25,7 @@ def main():
     inverted_index = defaultdict(set)
     for line in sys.stdin:
         doc_id, content = line.strip().split("\t", 1)
-        print(f"{doc_id}\n")
+        # print(f"{doc_id}\n")
         parsed_terms = cleaning(content)
         for term in parsed_terms:
             inverted_index[term].add(doc_id)
