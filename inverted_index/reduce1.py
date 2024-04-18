@@ -31,8 +31,10 @@ def main():
 
     for word, doc_ids in inverted_index.items():
         sorted_doc_ids = sorted(doc_ids.items(), key=lambda item: int(item[0]))
-        doc_ids_str = "\t".join(f"{doc_id} {count}" for doc_id, count in sorted_doc_ids)
-        print(f"{word}\t{doc_ids_str}")
+        for doc_id, count in sorted_doc_ids:
+            print(f"{word}\t{doc_id} {count}")
+        # doc_ids_str = "\t".join(f"{doc_id} {count}" for doc_id, count in sorted_doc_ids)
+        # print(f"{word}\t{doc_ids_str}")
 
 if __name__ == "__main__":
     main()

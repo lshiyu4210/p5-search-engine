@@ -43,9 +43,11 @@ madoop \
   -mapper ./map1.py \
   -reducer ./reduce1.py
 
-# Job 2
-madoop \
-  -input output1 \
-  -output output2 \
-  -mapper ./map2.py \
-  -reducer ./reduce2.py
+# # Job 2
+# madoop \
+#   -input output1 \
+#   -output output2 \
+#   -mapper ./map2.py \
+#   -reducer ./reduce2.py \
+#   -partitioner ./partition.py \
+#   -numReduceTasks 3
