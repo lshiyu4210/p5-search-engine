@@ -25,14 +25,14 @@ def main():
     inverted_index = defaultdict(lambda: defaultdict(int))
     for line in sys.stdin:
         doc_id, content = line.strip().split("\t", 1)
-        # print(f"{doc_id}\n")
         parsed_terms = cleaning(content)
         for term in parsed_terms:
             inverted_index[term][doc_id] += 1
 
     for word, doc_ids in inverted_index.items():
         sorted_doc_ids = sorted(doc_ids.items(), key=lambda item: int(item[0]))
-        print(f"{word}\t{sorted(sorted_doc_ids)}\n")
+        doc_ids_str = "\t".join(f"{doc_id} {count}" for doc_id, count in sorted_doc_ids)
+        print(f"{word}\t{doc_ids_str}")
 
 if __name__ == "__main__":
     main()
