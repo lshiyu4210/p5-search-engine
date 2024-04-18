@@ -31,14 +31,14 @@ def reduce_one_group(key, group):
     for i in group_list:   
         #idfk
         i = cleaning(i) #['andrew', '9229752', '1']
-        partition_key = int(i[1]) % 3
+        # partition_key = int(i[1]) % 3
         #idfk
         idfk = math.log10(N/nk)
         
         #normalization factor
         temp = (int(i[2]) * idfk)**2
         norm_factor += temp
-    print(partition_key, key, idfk, i[1], i[2], norm_factor)    
+    print(key, idfk, i[1], i[2], norm_factor)    
 
 def keyfunc(line):
     """Return the key from a TAB-delimited key-value pair."""
