@@ -48,6 +48,4 @@ madoop \
   -input output1 \
   -output output2 \
   -mapper ./map2.py \
-  -reducer ./reduce2.py \
-  -partitioner ./partition.py \
-  -numReduceTasks 3
+  -reducer ./reduce2.py
