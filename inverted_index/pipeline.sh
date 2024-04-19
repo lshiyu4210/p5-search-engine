@@ -15,7 +15,7 @@
 set -Eeuo pipefail
 
 # Optional input directory argument
-PIPELINE_INPUT=example_crawl
+PIPELINE_INPUT=crawl
 if [ -n "${1-}" ]; then
   PIPELINE_INPUT="$1"
 fi
@@ -49,3 +49,12 @@ madoop \
   -output output2 \
   -mapper ./map2.py \
   -reducer ./reduce2.py
+
+# Job 3
+madoop \
+  -input output2 \
+  -output output3 \
+  -mapper ./map3.py \
+  -reducer ./reduce3.py \
+  -partitioner ./partition.py \
+  -numReduceTasks 3
