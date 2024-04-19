@@ -32,8 +32,9 @@ def main():
     for word, doc_ids in inverted_index.items():
         sorted_doc_ids = sorted(doc_ids.items(), key=lambda item: int(item[0]))
         for doc_id, count in sorted_doc_ids:
-            partition_key = int(doc_id) % 3
-            print(f"{partition_key}\t{word}\t{doc_id} {count}")
+            # partition_key = int(doc_id) % 3
+            # {partition_key}\t
+            print(f"{word}\t{doc_id}\t{count}")
 
 if __name__ == "__main__":
     main()
