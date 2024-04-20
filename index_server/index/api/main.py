@@ -1,7 +1,14 @@
 import flask
 import index
 import re
-import logging
+
+app = flask.Flask(__name__)
+
+# @index.app.route('/indexes/', methods=["GET"])
+# def show_indexes():
+#     print(load_index.INDEXESx)
+#     return flask.jsonify(load_index.INDEXESx)
+
 @index.app.route('/api/v1/', methods=["GET"])
 def get_index():
     context = {
@@ -11,8 +18,19 @@ def get_index():
     return flask.jsonify(**context)
 
 def search_word(keyword):# ['hello', 'world']
+
+    if not index.api.INDEXES:
+        print("INDEXES is empty. Please load data before searching.")
+        return []
+
+    print("INDEXES length:", len(index.api.INDEXES))
+    
     results = []
-    for part in index.INDEXES:
+    print("liiine")
+    print(len(index.api.INDEXES))
+    for part in index.api.INDEXES:
+        
+
         lines = part.split('\n')
         for line in lines:
             if len(line) == 0:
@@ -27,6 +45,7 @@ def search_word(keyword):# ['hello', 'world']
                 data.append((doc_id, tfik*idfk))
                 i+=3
             results.append((word, data))
+            print(word, data)
     return results
 
 def load_stopwords(filepath):
@@ -49,8 +68,8 @@ def cleaning(text):
 def get_hit():
     query = flask.request.args.get('q')
     query = cleaning(query)
-    results = search_word(query)
-    print(results)
+    # results = search_word(query)
+    # print(results)
     print("Cleaned Queryssss:", query)
     context = {
         "doc_id": len(query),
