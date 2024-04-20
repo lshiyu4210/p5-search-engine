@@ -1,13 +1,14 @@
 import flask
 import index
 import re
-
+from index.api.load_index import INDEXESx
+from . import config
 app = flask.Flask(__name__)
 
-# @index.app.route('/indexes/', methods=["GET"])
-# def show_indexes():
-#     print(load_index.INDEXESx)
-#     return flask.jsonify(load_index.INDEXESx)
+@index.app.route('/indexes/', methods=["GET"])
+def show_indexes():
+    print(INDEXESx)
+    return flask.jsonify(INDEXESx)
 
 @index.app.route('/api/v1/', methods=["GET"])
 def get_index():
