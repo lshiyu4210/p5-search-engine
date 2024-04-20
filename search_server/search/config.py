@@ -9,7 +9,7 @@ SEARCH_INDEX_SEGMENT_API_URLS = [
 ]
 
 # File Upload to var/uploads/
-SEARCH_ROOT = pathlib.Path(__file__).resolve().parent.parent
+SEARCH_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 UPLOAD_FOLDER = SEARCH_ROOT/'var'/'uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024
