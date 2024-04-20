@@ -1,13 +1,12 @@
 import flask
 import index
 import re
-
+import collections
 app = flask.Flask(__name__)
 
-# @index.app.route('/indexes/', methods=["GET"])
-# def show_indexes():
-#     print(load_index.INDEXESx)
-#     return flask.jsonify(load_index.INDEXESx)
+@index.app.route('/indexes/', methods=["GET"])
+def show_indexes():
+    return flask.jsonify(index.INDEXESx)
 
 @index.app.route('/api/v1/', methods=["GET"])
 def get_index():
@@ -17,36 +16,28 @@ def get_index():
     }
     return flask.jsonify(**context)
 
-def search_word(keyword):# ['hello', 'world']
-
-    if not index.api.INDEXES:
-        print("INDEXES is empty. Please load data before searching.")
-        return []
-
-    print("INDEXES length:", len(index.api.INDEXES))
-    
-    results = []
-    print("liiine")
-    print(len(index.api.INDEXES))
-    for part in index.api.INDEXES:
-        
-
+def search_word(keyword):# ['hello', 'world']  
+    data = []
+    print("size of index:", len(index.INDEXES))
+    for part in index.INDEXES:
         lines = part.split('\n')
         for line in lines:
-            if len(line) == 0:
+            entries = line.split()
+            if len(entries) == 0:
                 continue
-            word = line[0]
-            idfk = line[1]
-            data = []
-            i = 4
-            while i < len(line):
-                doc_id = line[i-2]
-                tfik = line[i-1]
-                data.append((doc_id, tfik*idfk))
-                i+=3
-            results.append((word, data))
-            print(word, data)
-    return results
+            word = entries[0]
+            if word == keyword:
+                idf = float(entries[1])
+                
+                i = 4
+                while i < len(entries):
+                    doc_id = entries[i-2]
+                    tf = int(entries[i-1])
+                    data.append({"docid": doc_id,
+                                 "tf": tf,
+                                 "idf": idf})
+                    i+=3
+    return data
 
 def load_stopwords(filepath):
     """Load stop words from stopwords.txt."""
@@ -64,18 +55,24 @@ def cleaning(text):
 
     return cleaned_terms
 
+# def find_same_file(all_summaries):
+
+        
 @index.app.route('/api/v1/hits/', methods=["GET"])
 def get_hit():
     query = flask.request.args.get('q')
+    weight = flask.request.args.get('w', '0.5')
     query = cleaning(query)
-    # results = search_word(query)
-    # print(results)
-    print("Cleaned Queryssss:", query)
+    summary = []
+    for q in query:
+        print(q) 
+        summary.append(search_word(q))
+    if not summary:
+        return flask.jsonify(hits=[])
+    # if len(query) != 1:
+    #     summary = find_same_file(summary)
+    print(summary)
     context = {
-        "doc_id": len(query),
-        "score": "/api/v1/"
+        "hits": summary
     }
-    # for result in results:
-    #     context.
-    
     return flask.jsonify(**context)

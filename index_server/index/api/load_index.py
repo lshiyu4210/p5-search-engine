@@ -1,10 +1,10 @@
-
+import index
 # index_server/index/api.py
 INDEXES, PAGERANK, STOPWORDS = [], {}, []
-INDEXESx = []
+# global INDEXESx
 def load_index():
     """Load data into memory."""
-    global INDEXES, PAGERANK, STOPWORDS
+    # global INDEXES, PAGERANK, STOPWORDS
     #load inverted index file
     inverted_indexes = []
     for i in range(3):
@@ -12,27 +12,17 @@ def load_index():
         try:
             with open(file_path, 'r') as file:
                 content = file.read()
-                if content:  # Check if file read returns something non-empty
-                    inverted_indexes.append(content)
-                    print(f"Loaded {file_path} successfully.")  # Diagnostic print
-                else:
-                    print(f"Warning: {file_path} is empty.")  # Diagnostic print
-                    
-                # inverted_indexes.append(file.read())
-                # print("loaded corresponding files")
+                inverted_indexes.append(content)
         except FileNotFoundError:
             print(f"Error: {file_path} not found.")
         except Exception as e:
             print(f"An error occurred: {e}")
-    
-    if not inverted_indexes:
-        print("No index files loaded. Check the file paths and names.")
-    else:
-        print(f"Total files loaded: {len(inverted_indexes)}")
    
-    INDEXES = inverted_indexes
-    INDEXESx = ['index1', 'index2', 'index3']
-    print(INDEXESx)
+    index.INDEXES = inverted_indexes
+    index.INDEXESx = ['index1', 'index2', 'index3']
+    print(index.INDEXESx)
+    
+    
     #load pagerank file
     pagerank_path = 'index_server/index/pagerank.out'
     with open(pagerank_path, 'r') as f:
