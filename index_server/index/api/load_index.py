@@ -5,10 +5,9 @@ stopwords_path = index.app.config["FILE_PATH"] / 'stopwords.txt'
 PAGERANK_PATH = index.app.config["FILE_PATH"] / 'pagerank.out'
 index_path = index.app.config["INDEX_DICT_PATH"]
 
+
 def load_index():
-    """load the index file into two part here, one is index_list(which is dict here)
-        the other one is doc_N_factor, which stores the Normalization factor
-    """
+    """Load the index file into memory."""
     with open(stopwords_path, 'r', encoding='utf-8') as file:
         index.stopwords_set = set(file.read().split())
 
@@ -32,8 +31,9 @@ def load_index():
         temp_dict[term] = {'idf': term_idf}
 
         for i in range(2, len(line_list), 3):
-            doc_id, term_freq, n_factor = line_list[i], line_list[i +
-                                                           1], line_list[i + 2]
+            doc_id = line_list[i]
+            term_freq = line_list[i + 1]
+            n_factor = line_list[i + 2]
             doc_n_factor[doc_id] = n_factor
             temp_dict[term][doc_id] = term_freq
 

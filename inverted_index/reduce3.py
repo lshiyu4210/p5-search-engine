@@ -5,10 +5,12 @@ import sys
 import math
 from collections import defaultdict
 
+
 def main():
-    N = 0
-    with open("total_document_count.txt", "r") as file:
-        N = int(file.read())
+    """Calculate output entries."""
+    n_val = 0
+    with open("total_document_count.txt", "r", encoding='utf-8') as file:
+        n_val = int(file.read())
 
     norm_factor = 0.0
     norm_dict = defaultdict(float)
@@ -30,8 +32,7 @@ def main():
             doc_id = temp_doc_id
 
         # tf-idf calculation
-        nk = float(parts[3])
-        idfk = math.log10(N / nk)
+        idfk = math.log10(n_val / float(parts[3]))
         tfik = int(parts[2])
         wik = tfik * idfk
         if output_dict[key]:
@@ -40,10 +41,8 @@ def main():
             output = [idfk, int(parts[1]), tfik]
         output_dict[key].append(output)
         norm_factor += wik * wik
-        # print(norm_factor,'here')
     if doc_id and doc_id.isdigit():
         norm_dict[int(doc_id)] += norm_factor
-        # print(norm_dict[int(doc_id)])
     else:
         print(f"Warning: Invalid doc_id encountered: {doc_id}")
 
@@ -51,10 +50,15 @@ def main():
         message = f"{key} "
         for row in output_list:
             if len(row) == 2:
-                message += " ".join(str(x) for x in row) + " " + str(norm_dict[row[0]]) + " "
+                message += " ".join(str(x) for x in row)
+                message += " "
+                message += str(norm_dict[row[0]]) + " "
             elif len(row) == 3:
-                message += " ".join(str(x) for x in row) + " " + str(norm_dict[row[1]]) + " "
+                message += " ".join(str(x) for x in row)
+                message += " "
+                message += str(norm_dict[row[1]]) + " "
         print(message)
+
 
 if __name__ == "__main__":
     main()

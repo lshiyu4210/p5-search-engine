@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Map 1."""
-# FIXME shebang
 import sys
 import hashlib
 import bs4
@@ -41,8 +40,6 @@ for line in sys.stdin:
     doc_id = hash_obj.hexdigest()
     # Mod by 10^7 to limit the length of the doc_id
     doc_id = int(doc_id, 16) % (10**7)
-    
-    # FIXME Map 1 output.  Emit one line for each document, including the doc
-    # ID and document content (You will need them later!)
+
     print(f"{doc_id}\t{content}")
     HTML = ""

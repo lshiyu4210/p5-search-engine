@@ -7,6 +7,7 @@ import index
 
 @index.app.route('/api/v1/', methods=["GET"])
 def get_index():
+    """Write GET /api/v1/."""
     context = {
         "hits": "/api/v1/hits/",
         "url": "/api/v1/"
@@ -15,7 +16,7 @@ def get_index():
 
 
 def cleaning(query):
-    """clean up query words"""
+    """Clean up query words."""
     query = re.sub(r"[^a-zA-Z0-9 ]+", "", query)
     query = query.casefold()
     query = query.strip().split()
@@ -24,7 +25,7 @@ def cleaning(query):
 
 
 def make_query_dict(query):
-    """{term: value}"""
+    """Create diction of term: value."""
     query_dict = {}
     for term in query:
         if term not in query_dict:
@@ -33,24 +34,27 @@ def make_query_dict(query):
             query_dict[term] += 1
     return query_dict
 
+
 def make_doc_id_set(query):
-    """pick overlapping term doc_id set"""
-    tempList = []
-    tempSet = set()
+    """Pick overlapping term doc_id set."""
+    templist = []
+    tempset = set()
     for term, _ in query.items():
         term_dict = index.index_list[term]
         for doc_id, _ in term_dict.items():
             if doc_id != "idf":
-                tempSet.add(doc_id)
-        tempList.append(copy.deepcopy(tempSet))
-        tempSet.clear()
+                tempset.add(doc_id)
+        templist.append(copy.deepcopy(tempset))
+        tempset.clear()
 
-    result_set = tempList[0]
-    for single_set in tempList[1:]:
+    result_set = templist[0]
+    for single_set in templist[1:]:
         result_set = result_set.intersection(single_set)
     return result_set
 
+
 def create_document_vector(doc_id_set, doc_vector_dict, query):
+    """Create document vector."""
     for doc_id in doc_id_set:
         doc_vector = []
         for term, _ in query.items():
@@ -60,7 +64,9 @@ def create_document_vector(doc_id_set, doc_vector_dict, query):
         doc_vector_dict[doc_id] = copy.deepcopy(doc_vector)
     return doc_vector_dict
 
+
 def calc_tfidf(doc_score_dict, query_vector, doc_vector_dict):
+    """Calculate tfidf score."""
     for doc_id, doc_vector in doc_vector_dict.items():
         dot_product = 0
         for ele1, ele2 in zip(query_vector, doc_vector):
@@ -68,7 +74,9 @@ def calc_tfidf(doc_score_dict, query_vector, doc_vector_dict):
         doc_score_dict[doc_id] = dot_product
     return doc_score_dict
 
+
 def calc_with_weight(doc_score_dict, q_norm, weight):
+    """Calculate final score with weight."""
     for doc_id, score in doc_score_dict.items():
         d_norm = float(index.doc_n_factor[doc_id]) ** (1 / 2)
         tfidf = score / (q_norm * d_norm)
@@ -77,23 +85,25 @@ def calc_with_weight(doc_score_dict, q_norm, weight):
         doc_score_dict[doc_id] = score
     return doc_score_dict
 
+
 @index.app.route("/api/v1/hits/", methods=["GET"])
 def get_hit():
+    """Return hit lists based on the query and weight."""
     weight = float(flask.request.args.get('w', '0.5'))
     query = flask.request.args.get('q')
-    #clean up 
+    # clean up
     query = cleaning(query)
-    
-    #no word
+
+    # no word
     if len(query) == 0:
         context = {"hits": []}
         return flask.jsonify(**context)
 
-    #calculate query vector
+    # calculate query vector
     query = make_query_dict(query)
     query_vector = []
     q_norm = 0
-    
+
     for term, query_tf in query.items():
         if term not in index.index_list:
             context = {"hits": []}
@@ -103,19 +113,19 @@ def get_hit():
         q_norm += num ** 2
         query_vector.append(num)
 
-    #calculate documnet vector
+    # calculate documnet vector
     doc_id_set = make_doc_id_set(query)
     doc_vector_dict = {}
     doc_id_set = create_document_vector(doc_id_set, doc_vector_dict, query)
-    
-    #calculate tf-idf
+
+    # calculate tf-idf
     doc_score_dict = {}
     doc_score_dict = calc_tfidf(doc_score_dict, query_vector, doc_vector_dict)
 
-    #add weights to the score
+    # add weights to the score
     q_norm = q_norm ** (1 / 2)
     doc_score_dict = calc_with_weight(doc_score_dict, q_norm, weight)
-    
+
     hits = []
     doc_score_dict = sorted(
         doc_score_dict.items(),

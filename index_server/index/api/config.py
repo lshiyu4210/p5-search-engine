@@ -1,5 +1,5 @@
+"""Global variables."""
 from collections import defaultdict
-
 # Define global variables here
 INDICES = defaultdict(dict)
 PAGERANK = {}

@@ -7,11 +7,11 @@
 ## Background
 
 ### How many ULCS courses has group member 1 taken including the current semester? {: #Q02}
-FIXME
+3
 ### How many ULCS courses has group member 2 taken including the current semester? {: #Q03}
-FIXME (0 if only 1 group member)
+3
 ### How many ULCS courses has group member 3 taken including the current semester? {: #Q04}
-FIXME (0 if only 1-2 group members)
+0
 
 ## General
 ### Approximately how many interactions did you have with the bot on project 5? {: #Q05}
@@ -175,17 +175,67 @@ FIXME
 
 ## Interaction 2
 ### Prompt {: #Q20}
-FIXME
+how can I fix the code style error of this:
+R0914: Too many local variables (17/15) (too-many-locals), I felt that it's hard to cut down any more local variables
 
 ### Response {: #Q21}
-FIXME
+Hello there! When you encounter the error "R0914: Too many local variables (17/15) (too-many-locals)" with a linter, it does mean that your function has more local variables than recommended by the style guide or the rules configured for the project. To resolve this, consider the following strategies:
+
+
+Refactor into Smaller Functions: If possible, break down the function into smaller functions where each does a part of what the original function did. This better adheres to the single responsibility principle and makes your code more readable and maintainable.
+
+
+Use Data Structures: Group related variables into a dictionary, list, set, or a custom object. This allows you to pass around and manage one or a few composite objects instead of many individual variables.
+
+
+Global Variables: If some of the variables are meant to be constant or shared across functions, consider making them global. However, use globals judiciously as they can make the code harder to understand and maintain.
+
+
+Object-Oriented Programming (OOP): Perhaps you might employ a class to encapsulate some of the state if it represents a cohesive module of data.
+
+
+
+Here is a rough example of how you might refactor a function using (1) and (2) for too many local variables:
+
+Before Refactoring:
+
+def process_data():
+    var1 = ...
+    var2 = ...
+    # ...
+    var17 = ...
+    # Function body that uses all 17 variables
+
+After Refactoring:
+
+def process_part1(data):
+    # Logic for part 1
+    pass
+
+def process_part2(data):
+    # Logic for part 2
+    pass
+
+def process_data():
+    data = {
+        'var1': ...,
+        'var2': ...,
+        # Put as many variables as make sense together
+    }
+    process_part1(data)
+    process_part2(data)
+    # Continue with reduced number of variables
+
+Remaining careful to keep the refactored code readable and maintainable. If these modifications seem inconvenient or disrupt your logic significantly, then consider consulting with the course supervisor to see if there's a threshold adjustment that can be made for the linter in the context of your projects.
+
+Hope that helps, and keep up the good work! If you need anything else, feel free to ask.
 
 ### Was this response helpful? {: #Q22}
-- [ ] Yes
+- [x] Yes
 - [ ] No
 
 ### To the best of your knowledge, did it answer your question correctly: {: #Q23}
-- [ ] Yes
+- [y] Yes
 - [ ] No
 - [ ] Unsure
 
@@ -194,17 +244,20 @@ FIXME
 
 ## Interaction 3
 ### Prompt {: #Q25}
-FIXME
+Does this project need to worry about runtime and memory issue
+
 
 ### Response {: #Q26}
-FIXME
+Based on the information provided, it seems like there isn't a strict requirement to optimize for time and memory for project 5 (p5), as long as your code doesn't hang during tests or automated grading (AG). However, you should not store the entire input in any single data structure within a map or reduce stage, as it can cause your program to time out during tests. The primary focus should be on passing input through the stages rather than on time/memory optimization.
+
+To answer your question directly: The project does not need to explicitly worry about runtime and memory issues, aside from ensuring that your code executes without timing out or hanging. Always aim for clean, efficiently structured code, but you don't need to employ advanced optimization techniques for p5. Just make sure to follow best practices to prevent unnecessary waste of resources, which might indirectly help you to avoid performance-related issues.
 
 ### Was this response helpful? {: #Q27}
-- [ ] Yes
+- [x] Yes
 - [ ] No
 
 ### To the best of your knowledge, did it answer your question correctly: {: #Q28}
-- [ ] Yes
+- [y] Yes
 - [ ] No
 - [ ] Unsure
 
