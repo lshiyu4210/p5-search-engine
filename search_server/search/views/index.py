@@ -5,36 +5,41 @@ URLs include:
 /
 """
 from flask import render_template, request
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
 import requests
-from search.config import SEARCH_INDEX_SEGMENT_API_URLS 
+from heapq import merge
 import search
 
-def get_hits(server_url, query_params):
-    """Define a function to get hits from a server."""
-    response = requests.get(server_url, params=query_params)
-    response.raise_for_status()
-    return response.json()['hits']
+def fetch_hits(url, query_params, result_list):
+    try:
+        response = requests.get(url, params=query_params)
+        response.raise_for_status()
+        result_list.extend(response.json()['hits'])  # Use extend instead of append
+    except requests.RequestException as e:
+        print(f"Error fetching results from {url}: {e}")
 
 def get_top_10_results(query):
     query_params = {'q': query}
-    with ThreadPoolExecutor(max_workers=len(SEARCH_INDEX_SEGMENT_API_URLS)) as executor:
-        future_to_url = {
-            executor.submit(get_hits, url, query_params): url 
-            for url in SEARCH_INDEX_SEGMENT_API_URLS
-        }
-        
-        all_hits = []
-        for future in as_completed(future_to_url):
-            url = future_to_url[future]
-            try:
-                data = future.result()
-                all_hits.extend(data)
-            except Exception as exc:
-                print(f'{url} generated an exception: {exc}')
-    
-    top_hits = sorted(all_hits, key=lambda x: x['score'], reverse=True)[:10]
-    return top_hits
+    threads = []
+    results = [[] for _ in range(len(search.app.config["SEARCH_INDEX_SEGMENT_API_URLS"]))]  # A list of lists to store results for each thread
+
+    # Start a new thread for each index server URL
+    for i, url in enumerate(search.app.config["SEARCH_INDEX_SEGMENT_API_URLS"]):
+        thread = threading.Thread(target=fetch_hits, args=(url, query_params, results[i]))
+        thread.start()
+        threads.append(thread)
+
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
+
+    # Now, merge all results and sort them using heapq.merge
+    all_sorted_hits = list(merge(*results, key=lambda x: x['score'], reverse=True))
+    for r in results:
+        print(r)
+
+    # Return the top 10 hits
+    return all_sorted_hits[:10]
 
 @search.app.route('/', methods=['GET'])
 def show_index():
@@ -43,6 +48,7 @@ def show_index():
     weight = request.args.get('w', 0.5)
     if query:  # Only perform the search if there is a query
         top_hits = get_top_10_results(query)
+        # print(top_hits)
         # top_hits = [
         #     {"docid": 3929595},
         #     {"docid": 1210255},
@@ -59,6 +65,8 @@ def show_index():
         query_string = f'SELECT docid, title, summary, url FROM documents WHERE docid IN ({placeholders})'
         cur = connection.execute(query_string, [hit['docid'] for hit in top_hits])
         websites = cur.fetchall()
+        for w in websites:
+            print(w['title'])
 
         # Use the results to render the template
         return render_template('index.html', query=query, weight=weight, websites=websites)

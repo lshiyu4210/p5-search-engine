@@ -1,6 +1,7 @@
 """Search Server development configuration."""
 
 import pathlib
+import search
 
 SEARCH_INDEX_SEGMENT_API_URLS = [
     "http://localhost:9000/api/v1/hits/",
