@@ -1,5 +1,4 @@
-import index.api.config as cfg
-
-print(cfg.INDICES['michigan'])
+from index.api.config import INDICES, PAGERANK, STOPWORDS
+# print(cfg.INDICES['michigan'])
 # print(cfg.PAGERANK)
-# print(cfg.STOPWORDS)
+print(STOPWORDS)
