@@ -35,8 +35,10 @@ def get_top_10_results(query):
 
     # Now, merge all results and sort them using heapq.merge
     all_sorted_hits = list(merge(*results, key=lambda x: x['score'], reverse=True))
-    for r in results:
-        print(r)
+    for i, r in enumerate(results):
+        print(f"Results from thread {i}:")
+        for item in r:
+            print(item)
 
     # Return the top 10 hits
     return all_sorted_hits[:10]
@@ -48,7 +50,7 @@ def show_index():
     weight = request.args.get('w', 0.5)
     if query:  # Only perform the search if there is a query
         top_hits = get_top_10_results(query)
-        # print(top_hits)
+        print(top_hits)
         # top_hits = [
         #     {"docid": 3929595},
         #     {"docid": 1210255},
@@ -64,7 +66,10 @@ def show_index():
         placeholders = ', '.join('?' for unused in top_hits)
         query_string = f'SELECT docid, title, summary, url FROM documents WHERE docid IN ({placeholders})'
         cur = connection.execute(query_string, [hit['docid'] for hit in top_hits])
-        websites = cur.fetchall()
+        websites_dict = {row['docid']: row for row in cur.fetchall()}
+
+        # Build the websites list maintaining the order of top_hits
+        websites = [websites_dict[hit['docid']] for hit in top_hits]
         for w in websites:
             print(w['title'])
 
