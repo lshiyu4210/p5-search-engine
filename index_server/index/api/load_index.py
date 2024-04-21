@@ -4,7 +4,7 @@ def load_index():
     """Load data into memory."""
     # global INDEXES, PAGERANK, STOPWORDS
     for i in range(3):
-        file_path = f'index_server/index/inverted_index/inverted_index_0000{i}.txt'
+        file_path = f'index_server/index/inverted_index/inverted_index_{i}.txt'
         try:
             with open(file_path, 'r') as file:
                 for line in file:
@@ -40,6 +40,5 @@ def load_index():
     stopword_path = 'index_server/index/stopwords.txt'
     with open(stopword_path, 'r') as f:
         cfg.STOPWORDS = f.read().splitlines()
-    
     
     print("Inverted Indexes, PageRank, and Stopwords have been loaded into memory.")
