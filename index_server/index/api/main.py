@@ -33,7 +33,6 @@ def make_query_dict(query):
             query_dict[term] += 1
     return query_dict
 
-
 def make_doc_id_set(query):
     """pick overlapping term doc_id set"""
     tempList = []
@@ -51,29 +50,50 @@ def make_doc_id_set(query):
         result_set = result_set.intersection(single_set)
     return result_set
 
-def init_query_vector(query_tf, term, q_norm, query_vector):
-    num = query_tf * float(index.index_list[term]['idf'])
-    q_norm += num ** 2
-    query_vector.append(num)
+def create_document_vector(doc_id_set, doc_vector_dict, query):
+    for doc_id in doc_id_set:
+        doc_vector = []
+        for term, _ in query.items():
+            tf_val = index.index_list[term][doc_id]
+            entry = float(index.index_list[term]['idf']) * float(tf_val)
+            doc_vector.append(entry)
+        doc_vector_dict[doc_id] = copy.deepcopy(doc_vector)
+    return doc_vector_dict
 
+def calc_tfidf(doc_score_dict, query_vector, doc_vector_dict):
+    for doc_id, doc_vector in doc_vector_dict.items():
+        dot_product = 0
+        for ele1, ele2 in zip(query_vector, doc_vector):
+            dot_product += ele1 * ele2
+        doc_score_dict[doc_id] = dot_product
+    return doc_score_dict
+
+def calc_with_weight(doc_score_dict, q_norm, weight):
+    for doc_id, score in doc_score_dict.items():
+        d_norm = float(index.doc_n_factor[doc_id]) ** (1 / 2)
+        tfidf = score / (q_norm * d_norm)
+        score = weight * \
+            float(index.pagerank_list[doc_id]) + (1 - weight) * tfidf
+        doc_score_dict[doc_id] = score
+    return doc_score_dict
 
 @index.app.route("/api/v1/hits/", methods=["GET"])
 def get_hit():
+    weight = float(flask.request.args.get('w', '0.5'))
     query = flask.request.args.get('q')
     #clean up 
     query = cleaning(query)
     
-    weight = float(flask.request.args.get('w', '0.5'))
-
+    #no word
     if len(query) == 0:
         context = {"hits": []}
         return flask.jsonify(**context)
 
     #calculate query vector
     query = make_query_dict(query)
-
     query_vector = []
     q_norm = 0
+    
     for term, query_tf in query.items():
         if term not in index.index_list:
             context = {"hits": []}
@@ -82,37 +102,21 @@ def get_hit():
         num = query_tf * float(index.index_list[term]['idf'])
         q_norm += num ** 2
         query_vector.append(num)
-        
-        # init_query_vector(query_tf, term, query_vector)
 
-    q_norm = q_norm ** (1 / 2)
+    #calculate documnet vector
     doc_id_set = make_doc_id_set(query)
-
     doc_vector_dict = {}
-    for doc_id in doc_id_set:
-        doc_vector = []
-        for term, _ in query.items():
-            tf_in_doc = index.index_list[term][doc_id]
-            ele = float(index.index_list[term]['idf']) * float(tf_in_doc)
-            doc_vector.append(ele)
-        doc_vector_dict[doc_id] = copy.deepcopy(doc_vector)
-
+    doc_id_set = create_document_vector(doc_id_set, doc_vector_dict, query)
+    
+    #calculate tf-idf
     doc_score_dict = {}
+    doc_score_dict = calc_tfidf(doc_score_dict, query_vector, doc_vector_dict)
 
-    for doc_id, doc_vector in doc_vector_dict.items():
-        dot_product = 0
-        for ele1, ele2 in zip(query_vector, doc_vector):
-            dot_product += ele1 * ele2
-        doc_score_dict[doc_id] = dot_product
-
-    for doc_id, score in doc_score_dict.items():
-        d_norm = float(index.doc_n_factor[doc_id]) ** (1 / 2)
-        tfidf = score / (q_norm * d_norm)
-        score = weight * \
-            float(index.pagerank_list[doc_id]) + (1 - weight) * tfidf
-        doc_score_dict[doc_id] = score
-
-    temp_list = []
+    #add weights to the score
+    q_norm = q_norm ** (1 / 2)
+    doc_score_dict = calc_with_weight(doc_score_dict, q_norm, weight)
+    
+    hits = []
     doc_score_dict = sorted(
         doc_score_dict.items(),
         key=lambda x: x[1],
@@ -121,9 +125,9 @@ def get_hit():
         temp_dict = {}
         temp_dict["docid"] = int(doc_id)
         temp_dict["score"] = score
-        temp_list.append(temp_dict)
+        hits.append(temp_dict)
 
     context = {}
-    context["hits"] = temp_list
+    context["hits"] = hits
 
     return flask.jsonify(**context)
