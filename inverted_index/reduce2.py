@@ -13,27 +13,6 @@ def reduce_one_group(key, group):
     """Reduce one group."""
 
     # """tk, idfk, di, tfik, di, ..., ..."""
-    # group_list = list(group)
-
-    # nk = len(group_list)
-    # doc_count_file = open("total_document_count.txt", "r")
-    # N = int(doc_count_file.read())
-    # doc_count_file.close()
-
-    # norm_factor = 0
-    # for line in group_list:   
-    #     term_info = line.strip().split('\t')
-    #     # i = cleaning(i) #['andrew', '9229752', '1']
-    #     # print(term_info, nk)
-    #     # partition_key = int(i[1]) % 3
-    #     #idfk
-    # #     idfk = math.log10(N / nk)
-        
-    # #     #normalization factor
-    # #     temp = (int(i[2]) * idfk)**2
-    # #     norm_factor += temp
-    # # print(key, idfk, i[1], i[2], norm_factor)
-    # print(group_list)
     word_count = 0
     group = list(group)
     for line in group:

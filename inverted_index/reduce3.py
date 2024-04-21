@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reduce 2."""
+"""Reduce 3."""
 
 import sys
 import math

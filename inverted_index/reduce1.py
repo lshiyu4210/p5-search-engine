@@ -7,7 +7,7 @@ from collections import defaultdict
 def load_stopwords(filepath):
     """Load stop words from stopwords.txt."""
     with open(filepath, 'r') as file:
-        stopwords = set(file.read().split())
+        stopwords = file.read().split()
     return stopwords
 
 def cleaning(text):
