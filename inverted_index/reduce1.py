@@ -4,11 +4,13 @@ import sys
 import re
 from collections import defaultdict
 
+
 def load_stopwords(filepath):
     """Load stop words from stopwords.txt."""
-    with open(filepath, 'r') as file:
+    with open(filepath, 'r', encoding='utf-8') as file:
         stopwords = file.read().split()
     return stopwords
+
 
 def cleaning(text):
     """Clean text before parsing."""
@@ -22,6 +24,7 @@ def cleaning(text):
 
 
 def main():
+    """Clean up query and sort based on key."""
     inverted_index = defaultdict(lambda: defaultdict(int))
     for line in sys.stdin:
         doc_id, content = line.strip().split("\t", 1)
@@ -35,6 +38,7 @@ def main():
             # partition_key = int(doc_id) % 3
             # {partition_key}\t
             print(f"{word}\t{doc_id}\t{count}")
+
 
 if __name__ == "__main__":
     main()

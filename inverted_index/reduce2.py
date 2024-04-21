@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
 """Reduce 2."""
-"""
-Template reducer.
-
-https://github.com/eecs485staff/madoop/blob/main/README_Hadoop_Streaming.md
-"""
+#!/usr/bin/env python3
 import sys
 import itertools
 
 
+
+
 def reduce_one_group(key, group):
     """Reduce one group."""
-
     # """tk, idfk, di, tfik, di, ..., ..."""
     word_count = 0
     group = list(group)

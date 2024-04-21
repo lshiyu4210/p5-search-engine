@@ -13,10 +13,10 @@ app.config["INDEX_DICT_PATH"] = app.config["FILE_PATH"] / \
     'inverted_index' / app.config["INDEX_PATH"]
 
 
-stopwords_set = None # pylint: disable=invalid-name
-pagerank_list = None # pylint: disable=invalid-name
-index_list = None # pylint: disable=invalid-name
-doc_N_factor = None # pylint: disable=invalid-name
+stopwords_set = None  # pylint: disable=invalid-name
+pagerank_list = None  # pylint: disable=invalid-name
+index_list = None  # pylint: disable=invalid-name
+doc_N_factor = None  # pylint: disable=invalid-name
 
 import index.api  # noqa: E402  pylint: disable=wrong-import-position
 # Load inverted index, stopwords, and pagerank into memory
