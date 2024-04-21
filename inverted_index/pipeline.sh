@@ -58,3 +58,4 @@ madoop \
   -reducer ./reduce3.py \
   -partitioner ./partition.py \
   -numReduceTasks 3
+

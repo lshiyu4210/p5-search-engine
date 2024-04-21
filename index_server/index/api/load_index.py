@@ -1,45 +1,41 @@
-import index.api.config as cfg
+"""Load index."""
+import index
+
+stopwords_path = index.app.config["FILE_PATH"] / 'stopwords.txt'
+PAGERANK_PATH = index.app.config["FILE_PATH"] / 'pagerank.out'
+index_path = index.app.config["INDEX_DICT_PATH"]
 
 def load_index():
-    """Load data into memory."""
-    # global INDEXES, PAGERANK, STOPWORDS
-    for i in range(3):
-        file_path = f'index_server/index/inverted_index/inverted_index_{i}.txt'
-        try:
-            with open(file_path, 'r') as file:
-                for line in file:
-                    parts = line.strip().split()
-                    main_key = parts[0]
-                    # Initialize the main key if not already initialized
-                    if main_key not in cfg.INDICES:
-                        cfg.INDICES[main_key] = {}
-                    # Assign the 'idfk' value
-                    cfg.INDICES[main_key]['idfk'] = float(parts[1])
-                    # Iterate over the remaining parts of the line in steps of 3
-                    for j in range(2, len(parts), 3):
-                        sub_key = int(parts[j])  # Convert sub_key to integer
-                        sub_value_1 = int(parts[j+1])
-                        sub_value_2 = float(parts[j+2])
-                        cfg.INDICES[main_key][sub_key] = [sub_value_1, sub_value_2]
-        except FileNotFoundError:
-            print(f"Error: {file_path} not found.")
-        except Exception as e:
-            print(f"An error occurred: {e}")
+    """load the index file into two part here, one is index_list(which is dict here)
+        the other one is doc_N_factor, which stores the Normalization factor
+    """
+    with open(stopwords_path, 'r', encoding='utf-8') as file:
+        index.stopwords_set = set(file.read().split())
 
-    
-    #load pagerank file
-    pagerank_path = 'index_server/index/pagerank.out'
-    with open(pagerank_path, 'r') as f:
-        for line in f:
-            parts = line.strip().split(',')
-            page_id = int(parts[0])
-            page_rank_score = float(parts[1])
-            cfg.PAGERANK[page_id] = page_rank_score
-    
-    # Load stopwords file
-    stopword_path = 'index_server/index/stopwords.txt'
-    with open(stopword_path, 'r') as f:
-        cfg.STOPWORDS = f.read().split()
-    # print(cfg.STOPWORDS)
-    
-    print("Inverted Indexes, PageRank, and Stopwords have been loaded into memory.")
+    temp_dict = {}
+    with open(PAGERANK_PATH, 'r', encoding='utf-8') as file:
+        index.pagerank_list = [line.strip() for line in file.readlines()]
+    for line in index.pagerank_list:
+        doc_id, pagerank = line.split(',')[0], line.split(',')[1]
+        temp_dict[doc_id] = pagerank
+    index.pagerank_list = temp_dict
+
+    temp_dict = {}
+    doc_n_factor = {}
+    with open(index_path, 'r', encoding='utf-8') as file:
+        index.index_list = [line.strip() for line in file.readlines()]
+
+    for line in index.index_list:
+        line_list = line.split()
+        term = line_list[0]
+        term_idf = line_list[1]
+        temp_dict[term] = {'idf': term_idf}
+
+        for i in range(2, len(line_list), 3):
+            doc_id, term_freq, n_factor = line_list[i], line_list[i +
+                                                           1], line_list[i + 2]
+            doc_n_factor[doc_id] = n_factor
+            temp_dict[term][doc_id] = term_freq
+
+    index.index_list = temp_dict
+    index.doc_n_factor = doc_n_factor
