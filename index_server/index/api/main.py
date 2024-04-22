@@ -3,7 +3,8 @@ import re
 import copy
 import flask
 import index
-
+import math
+from collections import Counter
 
 @index.app.route('/api/v1/', methods=["GET"])
 def get_index():
@@ -78,7 +79,7 @@ def calc_tfidf(doc_score_dict, query_vector, doc_vector_dict):
 def calc_with_weight(doc_score_dict, q_norm, weight):
     """Calculate final score with weight."""
     for doc_id, score in doc_score_dict.items():
-        d_norm = float(index.doc_n_factor[doc_id]) ** (1 / 2)
+        d_norm = math.sqrt(float(index.doc_n_factor[doc_id]))
         tfidf = score / (q_norm * d_norm)
         score = weight * \
             float(index.pagerank_list[doc_id]) + (1 - weight) * tfidf
@@ -100,11 +101,11 @@ def get_hit():
         return flask.jsonify(**context)
 
     # calculate query vector
-    query = make_query_dict(query)
+    term_frequencies = Counter(query)
     query_vector = []
     q_norm = 0
 
-    for term, query_tf in query.items():
+    for term, query_tf in term_frequencies.items():
         if term not in index.index_list:
             context = {"hits": []}
             return flask.jsonify(**context)
@@ -114,16 +115,16 @@ def get_hit():
         query_vector.append(num)
 
     # calculate documnet vector
-    doc_id_set = make_doc_id_set(query)
+    doc_id_set = make_doc_id_set(term_frequencies)
     doc_vector_dict = {}
-    doc_id_set = create_document_vector(doc_id_set, doc_vector_dict, query)
+    doc_id_set = create_document_vector(doc_id_set, doc_vector_dict, term_frequencies)
 
     # calculate tf-idf
     doc_score_dict = {}
     doc_score_dict = calc_tfidf(doc_score_dict, query_vector, doc_vector_dict)
 
     # add weights to the score
-    q_norm = q_norm ** (1 / 2)
+    q_norm = math.sqrt(q_norm)
     doc_score_dict = calc_with_weight(doc_score_dict, q_norm, weight)
 
     hits = []

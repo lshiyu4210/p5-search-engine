@@ -4,7 +4,7 @@ import sys
 
 
 def main():
-    """Process ouput."""   
+    """Process ouput."""
     for line in sys.stdin:
         print(line.strip())
 
