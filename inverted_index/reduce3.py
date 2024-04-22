@@ -21,26 +21,23 @@ def main():
         line = line.strip()
         parts = line.split('\t')
 
-        key = parts[0]
-        temp_doc_id = parts[1]
         # reset new doc_id
-        if temp_doc_id != doc_id:
+        if parts[1] != doc_id:
             if doc_id is not None:
                 norm_dict[int(doc_id)] += norm_factor
                 # print(norm_dict[int(doc_id)])
             norm_factor = 0.0
-            doc_id = temp_doc_id
+            doc_id = parts[1]
 
         # tf-idf calculation
         idfk = math.log10(n_val / float(parts[3]))
-        tfik = int(parts[2])
-        wik = tfik * idfk
-        if output_dict[key]:
-            output = [int(parts[1]), tfik]
+        wik = int(parts[2]) * idfk
+        if output_dict[parts[0]]:
+            output = [int(parts[1]), int(parts[2])]
         else:
-            output = [idfk, int(parts[1]), tfik]
-        output_dict[key].append(output)
-        norm_factor += wik * wik
+            output = [idfk, int(parts[1]), int(parts[2])]
+        output_dict[parts[0]].append(output)
+        norm_factor += wik ** 2
     if doc_id and doc_id.isdigit():
         norm_dict[int(doc_id)] += norm_factor
     else:

@@ -3,7 +3,7 @@ import index
 
 stopwords_path = index.app.config["FILE_PATH"] / 'stopwords.txt'
 pagerank_path = index.app.config["FILE_PATH"] / 'pagerank.out'
-index_path = index.app.config["INDEX_DICT_PATH"]
+index_path = index.app.config["DICT_PATH"]
 
 
 def load_index():
@@ -11,7 +11,7 @@ def load_index():
     
     #  Load the stopword files into memory 
     with open(stopwords_path, 'r', encoding='utf-8') as file:
-        index.stopwords_set = set(file.read().split())
+        index.stopword_set = set(file.read().split())
 
     temp_dict = {}
     #  load the pagerank file into memory
