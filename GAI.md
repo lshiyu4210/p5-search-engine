@@ -235,7 +235,7 @@ Hope that helps, and keep up the good work! If you need anything else, feel free
 - [ ] No
 
 ### To the best of your knowledge, did it answer your question correctly: {: #Q23}
-- [y] Yes
+- [x] Yes
 - [ ] No
 - [ ] Unsure
 
@@ -257,7 +257,7 @@ To answer your question directly: The project does not need to explicitly worry 
 - [ ] No
 
 ### To the best of your knowledge, did it answer your question correctly: {: #Q28}
-- [y] Yes
+- [x] Yes
 - [ ] No
 - [ ] Unsure
 

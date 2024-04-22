@@ -8,20 +8,17 @@ index_path = index.app.config["DICT_PATH"]
 
 def load_index():
     """Load the index file into memory."""
-    
-    #  Load the stopword files into memory 
+    #  Load the inverted index
+    with open(index_path, 'r', encoding='utf-8') as file:
+        index.index_list = [line.strip() for line in file.readlines()]
+    #  Load the stopword files into memory
     with open(stopwords_path, 'r', encoding='utf-8') as file:
         index.stopword_set = set(file.read().split())
-
-    temp_dict = {}
-    #  load the pagerank file into memory
+    #  Load the pagerank file into memory
     with open(pagerank_path, 'r', encoding='utf-8') as file:
         index.pagerank_list = [line.strip() for line in file.readlines()]
 
-    #  load the inverted index
-    with open(index_path, 'r', encoding='utf-8') as file:
-        index.index_list = [line.strip() for line in file.readlines()]
-        
+    temp_dict = {}
     for line in index.pagerank_list:
         doc_id, pagerank = line.split(',')[0], line.split(',')[1]
         temp_dict[doc_id] = pagerank
@@ -30,8 +27,8 @@ def load_index():
     temp_dict = {}
     doc_n_factor = {}
 
-    for line in index.index_list:
-        entry = line.split()
+    for li in index.index_list:
+        entry = li.split()
         term = entry[0]
         idf = entry[1]
         temp_dict[term] = {'idf': idf}

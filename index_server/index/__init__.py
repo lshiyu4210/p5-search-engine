@@ -11,11 +11,8 @@ app.config["FILE_PATH"] = pathlib.Path(__file__).resolve().parent
 app.config["DICT_PATH"] = app.config["FILE_PATH"] / \
     'inverted_index' / app.config["INDEX_PATH"]
 
-
-stopword_set = None
-pagerank_list = None
-index_list = None
-doc_N_factor = None
+index_list, stopword_set = None, None
+pagerank_list, doc_n_factor = None, None
 
 import index.api  # noqa: E402  pylint: disable=wrong-import-position
 # Load inverted index, stopwords, and pagerank into memory

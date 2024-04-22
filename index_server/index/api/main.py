@@ -1,10 +1,11 @@
 """Index server API."""
 import re
 import copy
-import flask
-import index
 import math
 from collections import Counter
+import flask
+import index
+
 
 @index.app.route('/api/v1/', methods=["GET"])
 def get_index():
@@ -102,11 +103,11 @@ def get_hit():
         return flask.jsonify(**context)
 
     # calculate query vector
-    term_frequencies = Counter(query)
+    query = Counter(query)
     query_vector = []
     q_norm = 0
 
-    for term, query_tf in term_frequencies.items():
+    for term, query_tf in query.items():
         if term not in index.index_list:
             context = {"hits": []}
             return flask.jsonify(**context)
@@ -116,9 +117,9 @@ def get_hit():
         query_vector.append(num)
 
     # calculate documnet vector
-    doc_id_set = make_doc_id_set(term_frequencies)
+    doc_id_set = make_doc_id_set(query)
     doc_vector_dict = {}
-    doc_id_set = create_document_vector(doc_id_set, doc_vector_dict, term_frequencies)
+    doc_id_set = create_document_vector(doc_id_set, doc_vector_dict, query)
 
     # calculate tf-idf
     doc_score_dict = {}
