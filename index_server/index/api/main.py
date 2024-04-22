@@ -91,6 +91,7 @@ def calc_with_weight(doc_score_dict, q_norm, weight):
 def get_hit():
     """Return hit lists based on the query and weight."""
     weight = float(flask.request.args.get('w', '0.5'))
+    print(weight)
     query = flask.request.args.get('q')
     # clean up
     query = cleaning(query)
