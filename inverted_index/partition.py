@@ -1,5 +1,6 @@
-"""partition outputfiles."""
 #!/usr/bin/env -S python3 -u
+"""partition outputfiles."""
+
 import sys
 
 

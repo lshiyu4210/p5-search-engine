@@ -1,9 +1,7 @@
-"""Reduce 2."""
 #!/usr/bin/env python3
+"""Reduce 2."""
 import sys
 import itertools
-
-
 
 
 def reduce_one_group(key, group):
